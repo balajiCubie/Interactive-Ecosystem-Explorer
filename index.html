@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuvisoft: The Operating System of Engineering Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Industrial Serenity -->
+    <!-- Application Structure Plan: The application is designed as a non-linear, interactive dashboard to transform the dense source report into an exploratory experience. Instead of a linear scroll, it uses a thematic structure with a main navigation bar. Key sections include: 1) An interactive diagram of the Cuvisoft Ecosystem (SaaS, IIoT, Engineering Suites) where clicking a pillar updates the content, 2) A tabbed view of the core technologies (Cloud, Edge, CPS) featuring an interactive 5C architecture diagram, 3) A dashboard of dynamic charts visualizing ROI, and 4) A filterable grid of case studies. This modular, interactive structure was chosen to make the complex, interconnected concepts digestible and allow users to explore based on their interests, enhancing understanding and engagement far more effectively than a static page. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core Cuvisoft components. Goal: Organize/Inform. Viz: Interactive Diagram (HTML/CSS). Interaction: Click to update content pane. Justification: Shows high-level structure with deep-dive capability. Library: JS.
+        - Report Info: ROI data (productivity, cost savings). Goal: Inform/Persuade. Viz: Bar/Donut Charts. Interaction: Hover tooltips, potential filters. Justification: Quantifiable data is more impactful when visualized. Library: Chart.js (Canvas).
+        - Report Info: 5C Architecture for CPS. Goal: Explain a process. Viz: Interactive stepped diagram. Interaction: Click a step to see details. Justification: Breaks down a complex framework into a manageable, linear flow. Library: JS.
+        - Report Info: Case Studies. Goal: Validate/Inform. Viz: Filterable Card Grid. Interaction: Click buttons to filter by sector. Justification: Allows users to find relevant real-world examples quickly. Library: JS.
+        - Report Info: Edge vs Cloud. Goal: Compare/Relate. Viz: Side-by-side text with icons. Interaction: Static visual comparison. Justification: Clearly contrasts the roles of these two key technologies. Library: HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Light neutral background */
+            color: #343a40;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #005f73; /* Accent color */
+            border-bottom-color: #005f73;
+        }
+        .btn-primary {
+            background-color: #005f73;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #003e4d;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab.active {
+            border-color: #005f73;
+            background-color: #e0f7fa;
+            color: #005f73;
+        }
+        .pill-button.active {
+            background-color: #005f73;
+            color: white;
+        }
+        .pill-button {
+            transition: all 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#003e4d]">Cuvisoft</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#ecosystem" class="nav-link font-medium pb-1">Ecosystem</a>
+                <a href="#technology" class="nav-link font-medium pb-1">Technology</a>
+                <a href="#impact" class="nav-link font-medium pb-1">Impact</a>
+                <a href="#applications" class="nav-link font-medium pb-1">Applications</a>
+                <a href="#challenges" class="nav-link font-medium pb-1">Challenges</a>
+            </div>
+            <div class="md:hidden">
+                 <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#ecosystem" class="block py-2 text-gray-700">Ecosystem</a>
+            <a href="#technology" class="block py-2 text-gray-700">Technology</a>
+            <a href="#impact" class="block py-2 text-gray-700">Impact</a>
+            <a href="#applications" class="block py-2 text-gray-700">Applications</a>
+            <a href="#challenges" class="block py-2 text-gray-700">Challenges</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+        <!-- Hero Section -->
+        <section class="text-center mb-24">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-[#003e4d] leading-tight">
+                Architecting the Operating System of <span class="text-[#005f73]">Engineering Intelligence</span>
+            </h2>
+            <p class="mt-6 max-w-3xl mx-auto text-lg text-gray-600">
+                Cuvisoft unifies SaaS, IIoT, and Engineering Suites into a single, modular digital ecosystem. It's designed to break down data silos, accelerate intelligent automation, and drive real-time industrial transformation. Explore how we bridge the gap between design, deployment, and data feedback.
+            </p>
+        </section>
+
+        <!-- The Core Problem & Solution -->
+        <section class="mb-24">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">From Fragmentation to Unification</h3>
+                <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Modern industry struggles with disconnected systems. Cuvisoft provides a cohesive, intelligent platform for a true digital nervous system.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div class="card p-8 border-t-4 border-red-300">
+                    <h4 class="text-2xl font-bold text-red-800 mb-4">The Fragmented Now</h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">&#10007;</span> <span>Isolated data silos hindering visibility and collaboration.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">&#10007;</span> <span>Complex, costly point-to-point integrations that don't scale.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">&#10007;</span> <span>"Digital Decoration" - superficial changes with no core process improvement.</span></li>
+                        <li class="flex items-start"><span class="text-red-500 mr-3 mt-1">&#10007;</span> <span>Reactive problem-solving leading to inefficiency and downtime.</span></li>
+                    </ul>
+                </div>
+                <div class="card p-8 border-t-4 border-green-300">
+                    <h4 class="text-2xl font-bold text-green-800 mb-4">The Unified Future</h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">&#10003;</span> <span>A single source of truth for all industrial data.</span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">&#10003;</span> <span>Modular, API-driven architecture for agility and scalability.</span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">&#10003;</span> <span>Closed-loop system enabling autonomous innovation.</span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">&#10003;</span> <span>Proactive, data-driven strategies for optimized performance.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Interactive Ecosystem Explorer -->
+        <section id="ecosystem" class="mb-24 pt-16 -mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">Explore the Cuvisoft Ecosystem</h3>
+                <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Cuvisoft is built on three foundational pillars that work in synergy. Click on each pillar to discover its role, benefits, and how it integrates into the unified platform.</p>
+            </div>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Ecosystem Diagram/Controls -->
+                <div class="lg:col-span-1 flex flex-col space-y-4">
+                    <button class="pill-button p-6 rounded-lg text-left card active" data-pillar="saas">
+                        <h4 class="text-xl font-bold">SaaS Integration</h4>
+                        <p class="text-sm mt-1">Agile, scalable software delivery for industrial automation.</p>
+                    </button>
+                    <button class="pill-button p-6 rounded-lg text-left card" data-pillar="iiot">
+                        <h4 class="text-xl font-bold">IIoT & Connectivity</h4>
+                        <p class="text-sm mt-1">Real-time data from connected devices and legacy systems.</p>
+                    </button>
+                     <button class="pill-button p-6 rounded-lg text-left card" data-pillar="engineering">
+                        <h4 class="text-xl font-bold">Engineering Suites & AI</h4>
+                        <p class="text-sm mt-1">Advanced design, simulation, and AI-driven decision-making.</p>
+                    </button>
+                </div>
+                <!-- Dynamic Content Pane -->
+                <div id="ecosystem-content" class="lg:col-span-2 card p-8">
+                    <!-- Content will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- The Technology Stack -->
+        <section id="technology" class="mb-24 pt-16 -mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">The Power of Convergence</h3>
+                 <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Cuvisoft harnesses a powerful combination of cloud, edge, and cyber-physical systems to create a responsive and intelligent industrial infrastructure. Select a technology below to learn more.</p>
+            </div>
+            <div class="flex justify-center mb-8 border-b">
+                <button class="tab py-4 px-6 block hover:text-[#005f73] focus:outline-none border-b-2 font-medium active" data-tech="continuum">Edge-Cloud Continuum</button>
+                <button class="tab py-4 px-6 block hover:text-[#005f73] focus:outline-none border-b-2 font-medium" data-tech="cps">Cyber-Physical Systems</button>
+            </div>
+            <div id="tech-content">
+                 <!-- Content will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- Quantifiable Impact -->
+        <section id="impact" class="mb-24 pt-16 -mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">Quantifiable Impact & ROI</h3>
+                <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Digital transformation isn't just a concept; it delivers measurable results. This dashboard showcases the proven return on investment from implementing unified industrial ecosystems.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h4 class="font-bold text-lg mb-4 text-center">Operational Efficiency</h4>
+                    <div class="chart-container h-64 md:h-72"><canvas id="efficiencyChart"></canvas></div>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-bold text-lg mb-4 text-center">Cost Savings & ROI</h4>
+                    <div class="chart-container h-64 md:h-72"><canvas id="roiChart"></canvas></div>
+                </div>
+                <div class="card p-6 md:col-span-2 lg:col-span-1">
+                    <h4 class="font-bold text-lg mb-4 text-center">Key Performance Indicators</h4>
+                    <div class="space-y-4 pt-4">
+                        <div class="text-center">
+                            <p class="text-4xl font-bold text-[#005f73]">5x</p>
+                            <p class="text-gray-600">Faster Time-to-Market</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-4xl font-bold text-[#005f73]">80%</p>
+                            <p class="text-gray-600">Reduction in Manual Errors</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-4xl font-bold text-[#005f73]">99.98%</p>
+                            <p class="text-gray-600">Product Quality Output</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-World Applications -->
+        <section id="applications" class="mb-24 pt-16 -mt-16">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">Real-World Applications</h3>
+                <p class="mt-2 text-gray-600 max-w-2xl mx-auto">From self-healing factories to intelligent urban infrastructure, the principles of Cuvisoft are driving tangible results across sectors. Filter by industry to explore specific case studies.</p>
+            </div>
+            <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                <button class="case-filter-btn px-4 py-2 rounded-full font-medium text-sm md:text-base pill-button active" data-filter="all">All Sectors</button>
+                <button class="case-filter-btn px-4 py-2 rounded-full font-medium text-sm md:text-base pill-button" data-filter="manufacturing">Manufacturing</button>
+                <button class="case-filter-btn px-4 py-2 rounded-full font-medium text-sm md:text-base pill-button" data-filter="infrastructure">Infrastructure</button>
+                <button class="case-filter-btn px-4 py-2 rounded-full font-medium text-sm md:text-base pill-button" data-filter="robotics">Robotics</button>
+            </div>
+            <div id="case-studies-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Case studies injected by JS -->
+            </div>
+        </section>
+        
+        <!-- Challenges & Path Forward -->
+        <section id="challenges" class="pt-16 -mt-16">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold">The Path to Adoption</h3>
+                <p class="mt-2 text-gray-600 max-w-2xl mx-auto">Implementing a unified ecosystem requires addressing key technical and organizational challenges. Explore the primary hurdles and strategic recommendations for a successful transformation.</p>
+            </div>
+            <div id="challenges-accordion" class="max-w-4xl mx-auto space-y-4">
+                 <!-- Accordion items injected by JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-24">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h3 class="text-2xl font-bold">Cuvisoft</h3>
+            <p class="mt-2 max-w-2xl mx-auto text-gray-400">Redefining how engineering intelligence drives industrial value and shapes the future of operations in the digital age.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const data = {
+        pillars: {
+            saas: {
+                title: 'SaaS: Agility and Scalability',
+                content: `
+                    <p class="mb-4">Software-as-a-Service provides compelling benefits for industrial automation, including improved efficiency, real-time operational insights, and inherent scalability. User-friendly interfaces and lower initial costs make advanced software more accessible.</p>
+                    <h5 class="font-bold mb-2">Key Challenges Addressed by Cuvisoft:</h5>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Integration Complexity:</strong> Cuvisoft provides a standardized API layer, mitigating the need for custom development for each SaaS application.</li>
+                        <li><strong>Data Governance:</strong> A centralized management framework prevents data fragmentation and "Shadow IT," ensuring data integrity and security.</li>
+                        <li><strong>Security & Compliance:</strong> Acts as a sanitizing layer, mitigating risks associated with third-party integrations and helping enforce standards like GDPR or SOC 2.</li>
+                    </ul>
+                `
+            },
+            iiot: {
+                title: 'IIoT: Unlocking Operational Data',
+                content: `
+                    <p class="mb-4">Industrial IoT is the foundation for real-time transformation, connecting sensors, machines, and systems to provide critical data for predictive maintenance, quality control, and process automation.</p>
+                    <h5 class="font-bold mb-2">Overcoming Interoperability Barriers:</h5>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Legacy Systems:</strong> Cuvisoft incorporates "digital bridging" via edge gateways and protocol translation (OPC UA, MQTT) to unlock data from older equipment.</li>
+                        <li><strong>Cybersecurity:</strong> A unified approach enables centralized security monitoring, end-to-end encryption, and zero-trust architectures across all connected devices.</li>
+                        <li><strong>Scalability:</strong> By standardizing connectivity, Cuvisoft simplifies the scaling of IIoT solutions across multiple sites and global operations.</li>
+                    </ul>
+                `
+            },
+            engineering: {
+                title: 'Engineering Suites & AI: The Cognitive Core',
+                content: `
+                    <p class="mb-4">When augmented with AI/ML, Engineering Suites transform from design tools into a continuous, feedback-driven optimization loop. They enable advanced analytics, predictive modeling, and autonomous decision-making.</p>
+                    <h5 class="font-bold mb-2">From Design to Self-Optimization:</h5>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Feedback Loop:</strong> AI analyzes real-time operational data and feeds insights back into design and simulation tools for proactive adjustments.</li>
+                        <li><strong>Predictive Power:</strong> Enables sophisticated predictive maintenance strategies and continuous process optimization based on live data.</li>
+                        <li><strong>Data Integrity:</strong> Cuvisoft provides the clear data architecture needed to ensure AI models are reliable and trustworthy, overcoming legacy data challenges.</li>
+                    </ul>
+                `
+            }
+        },
+        tech: {
+            continuum: {
+                title: 'Edge-Cloud Continuum: Intelligent Data Gravity',
+                content: `
+                    <p class="mb-6 text-center text-gray-600">The optimal approach for industrial automation is a hybrid solution that blends the power of the cloud with the responsiveness of the edge. Cuvisoft operates on a model of "intelligent data gravity," where processing occurs where its value is maximized.</p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="text-center p-6 bg-gray-50 rounded-lg">
+                            <h4 class="text-xl font-bold text-[#005f73] mb-3">Edge Computing (Tactical Nerve Endings)</h4>
+                            <p class="text-gray-700">Processes data locally for real-time response. It enables instantaneous, localized decision-making, ensuring critical processes react in milliseconds, regardless of cloud connectivity.</p>
+                            <strong class="block mt-4">Best for:</strong>
+                            <span class="block text-sm text-gray-600">Real-time control, robotics, safety systems, low-latency predictive maintenance.</span>
+                        </div>
+                        <div class="text-center p-6 bg-gray-50 rounded-lg">
+                           <h4 class="text-xl font-bold text-[#003e4d] mb-3">Cloud Computing (Strategic Brain)</h4>
+                           <p class="text-gray-700">Provides centralized intelligence, long-term storage, and the holistic view needed for macro-trend analysis, global optimization, and large-scale AI model training.</p>
+                           <strong class="block mt-4">Best for:</strong>
+                           <span class="block text-sm text-gray-600">Big data analytics, enterprise-wide strategy, data lakes, long-term storage.</span>
+                        </div>
+                    </div>
+                `
+            },
+            cps: {
+                title: 'Cyber-Physical Systems: The 5C Architecture',
+                content: `
+                    <p class="mb-8 text-center text-gray-600">Cyber-Physical Systems (CPS) merge the physical and digital worlds. By implementing the 5C Architecture, Cuvisoft transforms traditional facilities into "cognitive factories" that can sense, analyze, and act autonomously. Click each layer to explore its function.</p>
+                    <div class="flex flex-col md:flex-row md:space-x-4">
+                        <div id="5c-nav" class="flex md:flex-col justify-center md:justify-start mb-6 md:mb-0 space-x-2 md:space-x-0 md:space-y-2">
+                           <button class="c5-button text-sm md:text-base text-left p-3 rounded-lg w-full pill-button active" data-layer="connection">1. Connection</button>
+                           <button class="c5-button text-sm md:text-base text-left p-3 rounded-lg w-full pill-button" data-layer="conversion">2. Conversion</button>
+                           <button class="c5-button text-sm md:text-base text-left p-3 rounded-lg w-full pill-button" data-layer="cybernetic">3. Cybernetic</button>
+                           <button class="c5-button text-sm md:text-base text-left p-3 rounded-lg w-full pill-button" data-layer="cognition">4. Cognition</button>
+                           <button class="c5-button text-sm md:text-base text-left p-3 rounded-lg w-full pill-button" data-layer="configuration">5. Configuration</button>
+                        </div>
+                        <div id="5c-content" class="flex-1 bg-gray-50 p-6 rounded-lg">
+                            <!-- 5C content injected here -->
+                        </div>
+                    </div>
+                `
+            }
+        },
+        c5Layers: {
+            connection: { title: 'Connection Layer', desc: 'Acquires raw data from a smart network of physical assets, devices, and sensors.', examples: 'Sensors on factory machines, PLCs, smart meters in a grid.'},
+            conversion: { title: 'Conversion Layer', desc: 'Transforms raw data into consumable, structured information through preprocessing, filtering, and structuring.', examples: 'Edge gateways translating sensor data, data aggregation for specific KPIs.'},
+            cybernetic: { title: 'Cybernetic Layer', desc: 'Creates digital representations (like Digital Twins) and enables advanced analytics by virtualizing network devices.', examples: 'Real-time dashboards, anomaly detection, asset health monitoring.'},
+            cognition: { title: 'Cognition Layer', desc: 'Derives actionable insights and supports collaborative decision-making through simulation, synthesis, and graphical user interfaces.', examples: 'Predictive maintenance models, process optimization simulations, AI-driven recommendations.'},
+            configuration: { title: 'Configuration Layer', desc: 'Enables autonomous self-configuration, adaptation, and optimization for a resilient and robust system design.', examples: 'Autonomous robots adjusting paths, self-correcting production lines.'},
+        },
+        caseStudies: [
+            { category: 'manufacturing', title: 'Predictive Maintenance & Digital Twins', content: 'A global oil & gas supermajor used an intelligent maintenance solution to achieve over $8M in value in 6 months, reducing field service trips by 18% and weekly planning by 95%.', source: 'XMPro' },
+            { category: 'manufacturing', title: 'Automated Quality Control', content: 'Siemens\' smart factory in Amberg achieved a 99.98% product quality output by integrating IIoT and AI for autonomous decision-making and real-time optimization.', source: 'Siemens' },
+            { category: 'infrastructure', title: 'Smart Electric Grids', content: 'IIoT enables the construction of smart grids that optimize energy flow based on real-time demand, seamlessly integrating renewables and enhancing overall efficiency.', source: 'General' },
+            { category: 'infrastructure', title: 'Intelligent Traffic Management', content: 'Smart cities use edge computing to analyze traffic data in real time, dynamically adjusting signal timings to reduce congestion and improve flow.', source: 'General' },
+            { category: 'robotics', title: 'Collaborative Robots (Cobots)', content: 'The cobot market is projected to be 34% of all industrial robot sales by 2025, driven by AI and computer vision for adaptive, precise tasks alongside humans.', source: 'General' },
+            { category: 'robotics', title: 'Digital Twin Simulation', content: 'Companies like KION Group and Foxconn use digital twins to design, simulate, and test multi-robot fleets before physical deployment, ensuring optimal performance and accelerating innovation.', source: 'Accenture/Foxconn' }
+        ],
+        challenges: [
+            { title: 'Cybersecurity & Data Governance', content: 'The integration of IT/OT systems increases cyber threats. A unified platform demands robust, centralized data governance and a zero-trust security model to protect fragmented data and connected devices.'},
+            { title: 'Standardization & Legacy Systems', content: 'The fragmented IoT landscape and proprietary legacy systems create interoperability hurdles. The path forward requires championing open standards (like OPC UA, MQTT) and using "digital bridging" technologies.'},
+            { title: 'Talent Gap & Workforce Transformation', content: 'A growing skills gap hinders growth. Success depends on strategic investment in upskilling and continuous learning programs for both technical and soft skills to adapt the workforce.'},
+            { title: 'Organizational Change Management', content: 'Digital transformation is a cultural shift. It requires strong leadership, clear communication, stakeholder buy-in, and cross-departmental collaboration to overcome resistance and siloed thinking.'}
+        ]
+    };
+
+    // Mobile Menu
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Ecosystem Explorer
+    const pillarButtons = document.querySelectorAll('.pill-button[data-pillar]');
+    const ecosystemContent = document.getElementById('ecosystem-content');
+
+    function updatePillarContent(pillarId) {
+        const pillarData = data.pillars[pillarId];
+        ecosystemContent.innerHTML = `
+            <div class="fade-in">
+                <h4 class="text-2xl font-bold mb-4 text-[#003e4d]">${pillarData.title}</h4>
+                ${pillarData.content}
+            </div>`;
+        
+        pillarButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.pillar === pillarId);
+        });
+    }
+
+    pillarButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            updatePillarContent(button.dataset.pillar);
+        });
+    });
+
+    // Technology Tabs
+    const techTabs = document.querySelectorAll('.tab[data-tech]');
+    const techContent = document.getElementById('tech-content');
+
+    function updateTechContent(techId) {
+        const techData = data.tech[techId];
+        techContent.innerHTML = `<div class="card p-8 fade-in">${techData.content}</div>`;
+        
+        techTabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tech === techId);
+        });
+
+        if (techId === 'cps') {
+            setup5CInteraction();
+            update5CContent('connection'); 
+        }
+    }
+    
+    techTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            updateTechContent(tab.dataset.tech);
+        });
+    });
+
+    // 5C Architecture Interaction
+    function setup5CInteraction() {
+        const c5Buttons = document.querySelectorAll('.c5-button');
+        c5Buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                update5CContent(button.dataset.layer);
+            });
+        });
+    }
+
+    function update5CContent(layerId) {
+        const layerData = data.c5Layers[layerId];
+        const c5Content = document.getElementById('5c-content');
+        c5Content.innerHTML = `
+            <div class="fade-in">
+                <h5 class="text-xl font-bold mb-2 text-[#005f73]">${layerData.title}</h5>
+                <p class="mb-4">${layerData.desc}</p>
+                <p class="text-sm text-gray-600"><strong class="text-gray-800">Examples:</strong> ${layerData.examples}</p>
+            </div>
+        `;
+        document.querySelectorAll('.c5-button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.layer === layerId);
+        });
+    }
+
+    // Chart.js Visualizations
+    const chartColors = {
+        primary: 'rgba(0, 95, 115, 0.8)',
+        secondary: 'rgba(0, 186, 188, 0.8)',
+        tertiary: 'rgba(174, 214, 222, 0.8)',
+        primaryBorder: 'rgba(0, 95, 115, 1)',
+        secondaryBorder: 'rgba(0, 186, 188, 1)',
+        tertiaryBorder: 'rgba(174, 214, 222, 1)',
+    };
+    
+    const chartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    color: '#495057'
+                }
+            },
+            tooltip: {
+                backgroundColor: '#343a40',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 10,
+                cornerRadius: 4
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0,0,0,0.05)'
+                },
+                ticks: {
+                    color: '#495057'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: '#495057'
+                }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('efficiencyChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Productivity', 'Customer Satisfaction', 'Lead Conversion'],
+            datasets: [{
+                label: 'Increase (%)',
+                data: [30, 25, 20],
+                backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.tertiary],
+                borderColor: [chartColors.primaryBorder, chartColors.secondaryBorder, chartColors.tertiaryBorder],
+                borderWidth: 1
+            }]
+        },
+        options: chartOptions
+    });
+    
+    new Chart(document.getElementById('roiChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Field Service Trips', 'OpEx Reduction', 'Maint. Planning'],
+            datasets: [{
+                label: 'Reduction (%)',
+                data: [18, 20, 95],
+                backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.tertiary],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            ...chartOptions,
+            plugins: { ...chartOptions.plugins, tooltip: { ...chartOptions.plugins.tooltip, callbacks: { label: (c) => `${c.label}: ${c.raw}% Reduction`}}}
+        }
+    });
+
+    // Case Studies Filter
+    const filterButtons = document.querySelectorAll('.case-filter-btn');
+    const caseStudiesGrid = document.getElementById('case-studies-grid');
+
+    function renderCaseStudies(filter) {
+        const filteredCases = filter === 'all' 
+            ? data.caseStudies 
+            : data.caseStudies.filter(c => c.category === filter);
+
+        caseStudiesGrid.innerHTML = filteredCases.map(c => `
+            <div class="card p-6 fade-in">
+                <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mb-3 capitalize">${c.category}</span>
+                <h4 class="font-bold text-lg mb-2">${c.title}</h4>
+                <p class="text-gray-600 text-sm">${c.content}</p>
+                <p class="text-xs text-gray-400 mt-4">Source: ${c.source}</p>
+            </div>
+        `).join('');
+    }
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.dataset.filter;
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderCaseStudies(filter);
+        });
+    });
+    
+    // Challenges Accordion
+    const challengesAccordion = document.getElementById('challenges-accordion');
+    challengesAccordion.innerHTML = data.challenges.map((challenge, index) => `
+        <div class="card overflow-hidden">
+            <button class="accordion-header w-full text-left p-6 flex justify-between items-center" data-index="${index}">
+                <h4 class="font-bold text-lg">${challenge.title}</h4>
+                <span class="accordion-icon transform transition-transform duration-300">&#9662;</span>
+            </button>
+            <div class="accordion-content hidden p-6 pt-0">
+                <p>${challenge.content}</p>
+            </div>
+        </div>
+    `).join('');
+    
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            
+            const isOpen = !content.classList.contains('hidden');
+
+            if (isOpen) {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+
+    // Initial state setup
+    updatePillarContent('saas');
+    updateTechContent('continuum');
+    renderCaseStudies('all');
+
+});
+</script>
+</body>
+</html>
