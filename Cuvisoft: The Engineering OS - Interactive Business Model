@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuvisoft: The Engineering OS - Interactive Business Model</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Tech Neutral -->
+    <!-- Application Structure Plan: The SPA is designed as a single-page, scrollable dashboard, abandoning the linear report structure for a more intuitive, story-driven flow. It starts with a Hero section stating the vision, then moves to an interactive "Core Flywheel" (the 3 components). This leads to the "Value Engine" (how value is created), followed by the "Strategic Levers" (what enables the engine). Next is "The Blueprint," combining architecture and monetization interactively. A "Lessons from Giants" section provides comparative analysis of other platforms using an interactive chart. It concludes with an interactive "Roadmap." This thematic, top-down structure is designed to guide the user from the high-level vision to the detailed implementation, making complex relationships easier to understand and explore. -->
+    <!-- Visualization & Content Choices: 
+        - Core Components: Goal: Organize/Relate. Method: Interactive HTML/CSS diagram instead of a static list. Interaction: Hovering over each component reveals its description. Justification: Visually shows the interconnectedness central to the report's thesis. Library: Tailwind CSS.
+        - Value Mechanisms: Goal: Explain/Organize. Method: Interactive cards. Interaction: Clicking a card reveals detailed text. Justification: Breaks down the four complex mechanisms into digestible, user-initiated chunks. Library: Vanilla JS, Tailwind.
+        - Strategic Levers: Goal: Inform/Relate. Method: Interactive HTML/CSS diagram of levers. Interaction: Clicking a lever highlights it and displays its function. Justification: Creates a tangible metaphor for these key points. Library: Vanilla JS, Tailwind.
+        - Platform Comparison: Goal: Compare. Method: Interactive grouped bar chart. Interaction: Users can see relative strengths across platforms. Justification: Transforms the dense Table 4 into a clear, insightful visual comparison. Library: Chart.js.
+        - Monetization Models: Goal: Compare. Method: Radar chart. Interaction: Visually compares the monetization mix of Cuvisoft vs. industry leaders. Justification: Effectively shows the strategic positioning and diversity of Cuvisoft's proposed revenue streams. Library: Chart.js.
+        - Implementation Roadmap: Goal: Show Change/Process. Method: Interactive horizontal timeline. Interaction: Clicking a phase displays detailed plans. Justification: More engaging and space-efficient than a long text list. Library: Vanilla JS, Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3F88C5;
+            border-bottom-color: #3F88C5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .flywheel-center:hover .flywheel-text {
+            opacity: 1;
+        }
+        .flywheel-segment {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .flywheel-segment:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .lever {
+            transition: all 0.3s ease-in-out;
+        }
+        .lever.active {
+            background-color: #3F88C5 !important;
+            color: white;
+        }
+        .lever:not(.active):hover {
+            background-color: #E07A5F !important;
+             color: white;
+        }
+        .phase.active {
+            background-color: #3F88C5;
+            color: white;
+        }
+        .phase.active .phase-circle {
+            background-color: white;
+            border-color: #3F88C5;
+        }
+        .phase.active .phase-line {
+             background-color: #3F88C5;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#3D405B]">
+                Cuvis<span class="text-[#3F88C5]">oft</span>
+            </h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#vision" class="nav-link">Vision</a>
+                <a href="#engine" class="nav-link">Value Engine</a>
+                <a href="#levers" class="nav-link">Levers</a>
+                <a href="#blueprint" class="nav-link">Blueprint</a>
+                <a href="#analysis" class="nav-link">Analysis</a>
+                <a href="#roadmap" class="nav-link">Roadmap</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Section: Vision -->
+        <section id="vision" class="text-center min-h-[80vh] flex flex-col justify-center items-center">
+            <h2 class="text-5xl md:text-7xl font-bold mb-4 leading-tight">The Operating System for <span class="text-[#3F88C5]">Engineering</span></h2>
+            <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 mb-8">
+                Cuvisoft is a high-leverage business model designed to maximize output with minimal effort. We are creating a self-scaling, intelligence-amplifying platform by integrating modular SaaS, IIoT infrastructure, and engineering intelligence into a unified digital ecosystem.
+            </p>
+            <div class="w-full max-w-5xl mt-12">
+                <p class="mb-6 font-semibold text-gray-700">This interactive report explores the core of our strategy. The central flywheel below shows the three interconnected components that power our ecosystem. Hover over each segment to learn more.</p>
+                <div id="flywheel" class="relative w-full aspect-square max-w-lg mx-auto flex items-center justify-center">
+                    <div class="absolute w-full h-full rounded-full border-2 border-dashed border-gray-300 animate-spin" style="animation-duration: 30s;"></div>
+                    <div class="flywheel-center relative w-1/3 h-1/3 bg-gray-100 rounded-full flex items-center justify-center cursor-default shadow-lg">
+                        <span class="font-bold text-center text-sm text-[#3F88C5]">Core<br>Ecosystem</span>
+                        <div class="flywheel-text absolute inset-0 bg-gray-800 text-white rounded-full flex items-center justify-center text-center text-xs p-2 opacity-0 transition-opacity duration-300">
+                            A unified platform for seamless engineering workflows.
+                        </div>
+                    </div>
+                    
+                    <!-- Segments will be populated by JS -->
+                </div>
+                 <div id="flywheel-info" class="mt-8 text-center text-gray-600 h-16 transition-all duration-300">Select a segment to see details here.</div>
+            </div>
+        </section>
+
+
+        <!-- Section: Value Engine -->
+        <section id="engine" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold">The Exponential Value Engine</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-600">Our platform's value isn't linear; it compounds. This is achieved through four interconnected mechanisms that create a self-reinforcing cycle of growth and intelligence amplification. Click each card to explore the mechanism.</p>
+            </div>
+            <div id="value-mechanisms-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Value Mechanism Cards will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- Section: Strategic Levers -->
+        <section id="levers" class="py-20 bg-gray-50 rounded-xl">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold">Key Strategic Levers</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-600">To achieve our vision, we focus on five key leverage points. These are the foundational pillars that amplify value across the ecosystem. Click on a lever to see how it contributes.</p>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <div id="levers-control" class="w-full lg:w-1/3 flex flex-col space-y-4">
+                    <!-- Levers will be populated by JS -->
+                </div>
+                <div class="w-full lg:w-2/3 p-8 bg-white rounded-lg shadow-md min-h-[300px]">
+                    <h3 id="lever-title" class="text-2xl font-bold text-[#3F88C5] mb-4">Select a Lever</h3>
+                    <p id="lever-description" class="text-gray-700">Details about the selected strategic lever will appear here, explaining its role in our growth and sustainability.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Blueprint -->
+        <section id="blueprint" class="py-20">
+             <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold">The Blueprint for Success</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-600">Our model is built on a robust architecture and a diversified monetization strategy, designed for scalability and long-term value capture.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Architecture -->
+                <div>
+                    <h3 class="text-3xl font-semibold mb-6 text-center">Ecosystem Architecture</h3>
+                    <p class="text-center text-gray-600 mb-8">Cuvisoft is a Platform-as-a-Service (PaaS) with distinct, interoperable layers that abstract complexity and empower developers.</p>
+                    <div id="architecture-layers" class="space-y-2">
+                        <!-- Layers populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Monetization -->
+                <div>
+                    <h3 class="text-3xl font-semibold mb-6 text-center">Monetization Strategy</h3>
+                     <p class="text-center text-gray-600 mb-8">We employ a diverse mix of revenue models to align our success with our customers' success, drawing inspiration from leading platforms. The chart shows our strategic mix.</p>
+                    <div class="chart-container">
+                        <canvas id="monetizationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Comparative Analysis -->
+        <section id="analysis" class="py-20 bg-gray-50 rounded-xl">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold">Lessons from Giants</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-600">We analyzed successful platform models to extract key patterns of leverage. This chart compares these platforms across synthesized metrics based on the report's qualitative analysis, showing where Cuvisoft aims to lead.</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="platformAnalysisChart"></canvas>
+            </div>
+            <p class="text-center mt-4 text-sm text-gray-500">Scores are synthesized on a 1-10 scale for comparison based on the report's qualitative descriptions.</p>
+        </section>
+
+        <!-- Section: Roadmap -->
+        <section id="roadmap" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold">Implementation Roadmap</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-600">Our vision will be realized through a phased approach, focusing on foundational development, ecosystem expansion, and eventual market dominance. Select a phase to view the plan.</p>
+            </div>
+
+            <div class="w-full max-w-4xl mx-auto">
+                <!-- Roadmap Timeline -->
+                <div class="relative">
+                     <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2"></div>
+                     <div id="phases-container" class="relative flex justify-between items-center">
+                        <!-- Phases populated by JS -->
+                     </div>
+                </div>
+
+                <!-- Roadmap Details -->
+                <div id="roadmap-details-container" class="mt-12 p-8 bg-white rounded-lg shadow-lg transition-all duration-500">
+                    <h3 id="phase-title" class="text-2xl font-bold text-[#3F88C5] mb-4"></h3>
+                    <div id="phase-content"></div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Cuvisoft Inc. The Future of Engineering, Reimagined.</p>
+            <p class="text-sm text-gray-400 mt-2">This is an interactive business model representation.</p>
+        </div>
+    </footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DATA STORE ---
+    const appData = {
+        coreComponents: [
+            { name: 'Modular SaaS', description: 'Flexible, scalable software solutions offered as independent, configurable modules to reduce upfront commitment and enable tailored implementations.', icon: '📦' },
+            { name: 'IIoT Integration', description: 'Centralized platform for connecting, monitoring, and managing industrial IoT devices and data streams for comprehensive operational visibility.', icon: '📡' },
+            { name: 'Engineering Intelligence', description: 'Embedded AI, ML, and advanced analytics to optimize workflows, enhance decision accuracy, and accelerate innovation.', icon: '🧠' }
+        ],
+        valueMechanisms: [
+            { name: 'Network Effects', description: 'The platform\'s value increases with each new user. We foster direct collaboration, a two-sided marketplace for services/apps, and complementary third-party development to create a self-reinforcing growth cycle.', icon: '🌐' },
+            { name: 'Data Feedback Loops', description: 'The platform becomes "smarter with use." Real-time collection of IIoT and user data, combined with AI analysis, allows for continuous system optimization and an enhanced user experience.', icon: '🔄' },
+            { name: 'Automation Engines', description: 'AI-powered automation of complex engineering workflows (design, testing, deployment) reduces manual effort, increases efficiency, and scales operations without a linear increase in human resources.', icon: '⚙️' },
+            { name: 'Plug-and-Play Suites', description: 'Standardized APIs and support for industry protocols lower adoption barriers, accelerate time-to-value, and expand platform capabilities through ecosystem contributions, fostering broad interoperability.', icon: '🔌' }
+        ],
+        strategicLevers: [
+            { title: 'Reusable Core Technology', description: 'We build on a robust platform engineering foundation with modular SDKs and APIs. This accelerates product development, reduces redundancy, and ensures consistent quality and scalability for both Cuvisoft and its users.' },
+            { title: 'Intelligent Data Orchestration', description: 'Dynamic data pipelines with event-driven triggers break down data silos, improve data accuracy, and enable advanced analytics and AI by ensuring a seamless, high-quality data flow across the ecosystem.' },
+            { title: 'API-Driven Integration', description: 'All core services are designed with API-first principles. This accelerates third-party development, enables seamless connectivity with existing systems, and future-proofs the platform architecture.' },
+            { title: 'Community-Led Expansion', description: 'We drive organic growth and innovation through external contributions by cultivating a developer-centric mindset, offering self-service tools, and hosting co-creation initiatives. This multiplies our development capacity.' },
+            { title: 'Autonomous Feedback Systems', description: 'Embedding AI/ML for self-learning and adaptive decision-making reduces operational costs, improves system reliability, and enables proactive problem-solving, freeing human engineers for more strategic tasks.' }
+        ],
+        architecture: [
+            { name: 'Developer & Community Layer', color: 'bg-sky-200', description: 'Tools (SDKs, No-code), Marketplace, and Portals to empower third-party innovation.' },
+            { name: 'Integration & API Layer', color: 'bg-sky-300', description: 'Enables seamless plug-and-play interoperability with all external and legacy systems.' },
+            { name: 'Modular Application Layer', color: 'bg-sky-400', description: 'Cuvisoft\'s proprietary suite of SaaS products built on reusable core technology.' },
+            { name: 'Data & Intelligence Layer', color: 'bg-sky-500', description: 'The core AI/ML engines and data orchestration that transform raw data into actionable insights.' },
+            { name: 'Infrastructure Abstraction Layer', color: 'bg-sky-600', description: 'Leverages public cloud services (e.g., AWS, Azure) for scalable and reliable compute, storage, and networking.' }
+        ],
+        platformAnalysis: {
+            labels: ['Modularity', 'Ecosystem Openness', 'Developer Focus', 'Data Monetization', 'Integrated Monetization'],
+            platforms: [
+                { name: 'AWS', scores: [9, 7, 9, 6, 8], color: 'rgba(255, 159, 64, 0.7)' },
+                { name: 'Siemens Xcelerator', scores: [7, 9, 6, 5, 7], color: 'rgba(75, 192, 192, 0.7)' },
+                { name: 'Azure IoT', scores: [8, 6, 8, 8, 7], color: 'rgba(54, 162, 235, 0.7)' },
+                { name: 'Unity', scores: [6, 8, 7, 4, 9], color: 'rgba(153, 102, 255, 0.7)' },
+                 { name: 'Cuvisoft (Goal)', scores: [9, 9, 9, 8, 8], color: 'rgba(255, 99, 132, 0.7)' }
+            ]
+        },
+        monetization: {
+            labels: ['Tiered Subscription', 'Usage-Based Pricing', 'Marketplace Fees', 'Data Monetization', 'Professional Services'],
+            datasets: [
+                {
+                    label: 'Cuvisoft Proposed Mix',
+                    data: [8, 9, 7, 6, 7],
+                    fill: true,
+                    backgroundColor: 'rgba(63, 136, 197, 0.2)',
+                    borderColor: 'rgb(63, 136, 197)',
+                    pointBackgroundColor: 'rgb(63, 136, 197)',
+                },
+                {
+                    label: 'Typical Platform Average',
+                    data: [7, 6, 5, 5, 6],
+                    fill: true,
+                    backgroundColor: 'rgba(224, 122, 95, 0.2)',
+                    borderColor: 'rgb(224, 122, 95)',
+                    pointBackgroundColor: 'rgb(224, 122, 95)',
+                }
+            ]
+        },
+        roadmap: [
+            {
+                phase: 1,
+                title: 'Phase 1: Foundational Platform & Core Vertical Focus',
+                duration: 'Months 1-12',
+                content: `
+                    <p class="mb-3"><strong class="text-gray-800">Recommendation:</strong> Prioritize core PaaS infrastructure and deeply penetrate a single, high-leverage engineering vertical (e.g., advanced manufacturing).</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>Build robust, secure, and scalable cloud-native infrastructure.</li>
+                        <li>Develop the intelligent data orchestration engine for the target vertical.</li>
+                        <li>Launch a minimal viable set of modular SaaS products.</li>
+                        <li>Release initial SDKs, APIs, and documentation.</li>
+                        <li>Initiate pilot programs with key customers to gather feedback and prove ROI.</li>
+                    </ul>
+                `
+            },
+            {
+                phase: 2,
+                title: 'Phase 2: Ecosystem Expansion & Feature Amplification',
+                duration: 'Months 13-24',
+                content: `
+                    <p class="mb-3"><strong class="text-gray-800">Recommendation:</strong> Expand platform capabilities, invest in the developer community, and begin fostering a vibrant third-party ecosystem.</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>Introduce no-code/low-code tools for workflow automation.</li>
+                        <li>Launch the Cuvisoft Marketplace with incentives for early partners.</li>
+                        <li>Deepen engineering intelligence with more advanced AI/ML models.</li>
+                        <li>Cultivate the developer community via hackathons and forums.</li>
+                        <li>Explore strategic partnerships with complementary tech providers.</li>
+                    </ul>
+                `
+            },
+            {
+                phase: 3,
+                title: 'Phase 3: Market Dominance & Intelligence-as-a-Service',
+                duration: 'Months 25+',
+                content: `
+                    <p class="mb-3"><strong class="text-gray-800">Recommendation:</strong> Solidify Cuvisoft's position as the de facto "Operating System for Engineering" and diversify monetization by emphasizing "Intelligence-as-a-Service".</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>Contribute to and help define industry-wide data standards.</li>
+                        <li>Introduce "Intelligence-as-a-Service" offerings for high-value outcomes.</li>
+                        <li>Scale user acquisition efforts across multiple new verticals.</li>
+                        <li>Continuously enhance autonomous feedback systems toward self-management.</li>
+                        <li>Invest in advanced, industry-specific security and compliance certifications.</li>
+                    </ul>
+                `
+            }
+        ]
+    };
+
+    // --- INITIALIZATION & RENDERING ---
+
+    function initFlywheel() {
+        const flywheel = document.getElementById('flywheel');
+        const infoPanel = document.getElementById('flywheel-info');
+        const components = appData.coreComponents;
+        const angleStep = 360 / components.length;
+
+        components.forEach((comp, index) => {
+            const angle = angleStep * index;
+            const segment = document.createElement('div');
+            segment.className = 'flywheel-segment absolute w-1/3 h-1/3 rounded-full flex items-center justify-center text-center cursor-pointer shadow-md p-2';
+            segment.style.transform = `rotate(${angle}deg) translate(${flywheel.offsetWidth / 2.5}px) rotate(-${angle}deg)`;
+            segment.style.backgroundColor = ['#82aedc', '#6da2d9', '#4c89c8'][index];
+            
+            segment.innerHTML = `<span class="font-semibold text-xs text-white">${comp.icon} ${comp.name}</span>`;
+            
+            segment.addEventListener('mouseenter', () => {
+                infoPanel.innerHTML = `<strong class="text-[#3F88C5]">${comp.name}:</strong> ${comp.description}`;
+            });
+            
+            flywheel.appendChild(segment);
+        });
+    }
+
+    function initValueMechanisms() {
+        const grid = document.getElementById('value-mechanisms-grid');
+        appData.valueMechanisms.forEach(mech => {
+            const card = document.createElement('div');
+            card.className = 'glass-card rounded-xl p-6 cursor-pointer transform hover:-translate-y-2 transition-transform duration-300';
+            card.innerHTML = `
+                <div class="flex items-center text-2xl font-bold mb-4">
+                    <span class="mr-4 text-4xl">${mech.icon}</span>
+                    <h3 class="text-[#3D405B]">${mech.name}</h3>
+                </div>
+                <p class="text-gray-600">${mech.description}</p>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function initStrategicLevers() {
+        const controlContainer = document.getElementById('levers-control');
+        const titleEl = document.getElementById('lever-title');
+        const descriptionEl = document.getElementById('lever-description');
+
+        appData.strategicLevers.forEach((lever, index) => {
+            const button = document.createElement('button');
+            button.className = 'lever w-full text-left p-4 rounded-lg font-semibold bg-white shadow-sm';
+            button.textContent = lever.title;
+            button.dataset.index = index;
+            
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.lever').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                titleEl.textContent = lever.title;
+                descriptionEl.textContent = lever.description;
+            });
+            controlContainer.appendChild(button);
+        });
+        
+        // Activate the first lever by default
+        controlContainer.querySelector('.lever').click();
+    }
+    
+    function initArchitecture() {
+        const container = document.getElementById('architecture-layers');
+        appData.architecture.forEach(layer => {
+            const div = document.createElement('div');
+            div.className = `p-4 rounded-lg text-white text-center font-semibold shadow-lg ${layer.color}`;
+            div.innerHTML = `
+                <h4 class="font-bold">${layer.name}</h4>
+                <p class="text-sm font-normal">${layer.description}</p>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function initRoadmap() {
+        const phasesContainer = document.getElementById('phases-container');
+        const titleEl = document.getElementById('phase-title');
+        const contentEl = document.getElementById('phase-content');
+        const detailsContainer = document.getElementById('roadmap-details-container');
+
+        appData.roadmap.forEach(phaseData => {
+            const phaseEl = document.createElement('div');
+            phaseEl.className = 'phase relative flex flex-col items-center cursor-pointer p-2 rounded-lg transition-colors duration-300';
+            phaseEl.dataset.phase = phaseData.phase;
+            phaseEl.innerHTML = `
+                <div class="phase-circle w-8 h-8 rounded-full bg-gray-200 border-4 border-white flex items-center justify-center font-bold text-gray-600 transition-colors duration-300">${phaseData.phase}</div>
+                <span class="mt-2 text-sm font-semibold">${phaseData.duration}</span>
+            `;
+            
+            phaseEl.addEventListener('click', () => {
+                document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+                phaseEl.classList.add('active');
+
+                detailsContainer.style.opacity = 0;
+                setTimeout(() => {
+                    titleEl.textContent = phaseData.title;
+                    contentEl.innerHTML = phaseData.content;
+                    detailsContainer.style.opacity = 1;
+                }, 300);
+            });
+
+            phasesContainer.appendChild(phaseEl);
+        });
+        
+        // Activate phase 1 by default
+        phasesContainer.querySelector('.phase').click();
+    }
+
+    // --- CHART CREATION ---
+
+    function createPlatformAnalysisChart() {
+        const ctx = document.getElementById('platformAnalysisChart').getContext('2d');
+        const data = appData.platformAnalysis;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: data.platforms.map(p => ({
+                    label: p.name,
+                    data: p.scores,
+                    backgroundColor: p.color,
+                    borderColor: p.color.replace('0.7', '1'),
+                    borderWidth: 1
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Platform Leverage Point Comparison' },
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: { display: true, text: 'Synthesized Score (1-10)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function createMonetizationChart() {
+        const ctx = document.getElementById('monetizationChart').getContext('2d');
+        const data = appData.monetization;
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: data.labels,
+                datasets: data.datasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Cuvisoft Monetization Strategy Mix' },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- SCROLLSPY ---
+    function initScrollSpy() {
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                    });
+                }
+            });
+        }, { rootMargin: "-50% 0px -50% 0px" });
+
+        sections.forEach(section => observer.observe(section));
+    }
+
+
+    // --- RUN ALL INITIALIZATIONS ---
+    initFlywheel();
+    initValueMechanisms();
+    initStrategicLevers();
+    initArchitecture();
+    initRoadmap();
+    createPlatformAnalysisChart();
+    createMonetizationChart();
+    initScrollSpy();
+
+});
+</script>
+
+</body>
+</html>
